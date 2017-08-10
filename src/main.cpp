@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "PID.h"
 #include <math.h>
+#include <deque>
 
 // for convenience
 using json = nlohmann::json;
@@ -34,6 +35,13 @@ int main()
 
   PID pid;
   // TODO: Initialize the pid variable.
+  // Initial values taken from lessons and adjusted via the simplistic "try / error" method.
+  double Kp = 0.18;  // Proportional
+  // Don't have systematic bias, so no need to compensate.
+  double Ki = 0.0;  // Integral
+  double Kd = 3.0;  // Differential
+
+  pid.Init(Kp, Ki, Kd);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -48,9 +56,9 @@ int main()
         if (event == "telemetry") {
           // j[1] is the data JSON object
           double cte = std::stod(j[1]["cte"].get<std::string>());
-          double speed = std::stod(j[1]["speed"].get<std::string>());
-          double angle = std::stod(j[1]["steering_angle"].get<std::string>());
-          double steer_value;
+          // double speed = std::stod(j[1]["speed"].get<std::string>());
+          // double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+          // double steer_value;
           /*
           * TODO: Calcuate steering value here, remember the steering value is
           * [-1, 1].
@@ -58,6 +66,14 @@ int main()
           * another PID controller to control the speed!
           */
           
+          pid.UpdateError(cte);
+
+          double steer_value = pid.TotalError();
+          
+          // Ensuring the maximum values are never surpassed.
+          if(steer_value > 1.0) steer_value = 1.0;
+          if(steer_value < -1.0) steer_value = -1.0;
+
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
