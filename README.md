@@ -17,6 +17,12 @@ Self-Driving Car Engineer Nanodegree Program
 
 All the parameters has been chosen by the old _try/error_ technique. I've found that the _I_ component was nearly innocuous in my solution, I've setted it to `0` and obtained better results.
 
+The final values are:
+
+- _P_ = `0.18`
+- _I_ = `0`
+- _D_ = `3.0`
+
 ### Result
 
 You can observe the result in this [video](./self_driving_car_nanodegree_program-10_08_2017-10_24_53.mp4).
